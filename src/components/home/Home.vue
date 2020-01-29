@@ -16,7 +16,6 @@
                 </p>
 
                 <b-button variant="primary" :to="{ name: 'posts' }" class="text-white">Explore</b-button>
-                <b-button variant="success" @click="increment">Increase {{ count }}</b-button>
             </b-jumbotron>
             <recent-posts></recent-posts>
         </div>
@@ -40,9 +39,7 @@ export default {
         }
     },
     computed: {
-        ...mapState({
-            count: state => state.count
-        })
+        ...mapState(['currentUser','count'])
     }
 }
 </script>

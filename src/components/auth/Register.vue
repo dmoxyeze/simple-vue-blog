@@ -23,25 +23,41 @@
                                             <strong> UP</strong>
                                         </a>
                                     </h3>
+                                    <h6 class="text-danger" v-if="errorMessage">{{ errorMessage }}</h6>
                                 </div>
-                                <form action="" method="post">
+                                <form @submit.prevent>
                                     <!--Body-->
                                     <div class="md-form">
-                                        <input type="text" id="Form-email5" class="form-control white-text" placeholder="Your Email" name="email">
+                                        <input v-model.trim="name" type="text" id="Form-name" class="form-control white-text" placeholder="Your Full Name" name="name">
+                                        <label for="Form-name" class="white-text">Your Name</label>
+                                    </div>
+                                    <div class="md-form">
+                                        <input v-model.trim="phone" type="text" id="Form-phone" class="form-control white-text" placeholder="Your Phone Number" name="phone">
+                                        <label for="Form-phone" class="white-text">Your Phone Number</label>
+                                    </div>
+                                    <div class="md-form">
+                                        <input v-model.trim="email" type="text" id="Form-email5" class="form-control white-text" placeholder="Your Email" name="email">
                                         <label for="Form-email5" class="white-text">Your email</label>
                                     </div>
 
-                                    <div class="md-form pb-3">
-                                        <input type="password" id="Form-pass5" class="form-control white-text" name="password">
-                                        <label for="Form-pass5" class="white-text">Your password</label>
+                                    <div class="md-form">
+                                          <input v-model.trim='password' type="password" class="form-control" id="inputPassword" placeholder="Password">
+                                          <label for="inputPassword" class="">Password</label>
                                     </div>
+                                    <transition name="fade">
+                                        <div  v-if="loading" class="d-flex justify-content-center">
+                                          <div class="spinner-border mb-3 text-primary" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                          </div>
+                                        </div>
+                                    </transition>
 
                                     <!--Grid row-->
                                     <div class="row d-flex align-items-center mb-4">
 
                                         <!--Grid column-->
                                         <div class="text-center mb-3 col-md-12">
-                                            <button type="submit" class="btn btn-primary btn-block btn-rounded z-depth-1 waves-effect waves-light" name="login">Sign Up</button>
+                                            <button @click='signup' class="btn btn-primary btn-block btn-rounded z-depth-1 waves-effect waves-light" name="login">Sign Up</button>
                                         </div>
                                         <!--Grid column-->
                                     </div>
@@ -56,7 +72,7 @@
                                     <!--Grid column-->
                                     <div class="col-md-6 col-xs-12">
                                         <p class="font-small white-text d-flex justify-content-end">
-                                            <a :to="{ name: 'login' }" class="blue-text ml-1 font-weight-bold"> Registered? Sign IN</a>
+                                            <router-link :to="{ name: 'login' }" class="blue-text ml-1 font-weight-bold">Registered? Sign IN</router-link>
                                         </p>
                                     </div>
                                 <!--Grid column-->
@@ -77,7 +93,43 @@
     </div>
 </template>
 <script>
+const fb = require('../../firebase/firebaseConfig')
 export default {
-    name: 'Register'
+    name: 'Register',
+    data: () => {
+        return {
+            name: "",
+            email: "",
+            password: "",
+            phone: "",
+            loading: false,
+            errorMessage: ""
+        }
+    },
+    methods: {
+        signup() {
+            this.loading = true;
+            fb.auth.createUserWithEmailAndPassword(this.email, this.password).then(user => {
+                console.log(user.user)
+
+                this.$store.commit('setCurrentUser', user.user)
+
+                // create user obj
+                fb.usersCollection.doc(user.user.uid).set({
+                    name: this.name,
+                    phone: this.phone
+                }).then(() => {
+                    this.$store.dispatch('fetchUserProfile')
+                    this.$router.push('/create-post')
+                }).catch(err => {
+                    console.log(err)
+                })
+            }).catch(error => {
+                this.loading = false;
+                console.log(error.code)
+                this.errorMessage = error.message;
+            })
+        }
+    }
 }
 </script>

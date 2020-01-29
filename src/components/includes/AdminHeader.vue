@@ -28,8 +28,8 @@
               <template v-slot:button-content>
                 User
               </template>
-              <b-dropdown-item :to="{ name: 'login' }">Login</b-dropdown-item>
-              <b-dropdown-item :to="{ name: 'register' }">Sign Up</b-dropdown-item>
+              <b-dropdown-item :to="{ name: 'create-post' }">Create Post</b-dropdown-item>
+              <b-dropdown-item @click="logout">Logout</b-dropdown-item>
             </b-nav-item-dropdown>
           </b-navbar-nav>
         </b-collapse>
@@ -39,9 +39,16 @@
 <script>
 const fb =  require("../../firebase/firebaseConfig")
 export default {
-   name: 'Header',
+   name: 'AdminHeader',
    methods: {
-      
+      logout() {
+          fb.auth.signOut().then(() => {
+              this.$store.dispatch('clearData')
+              this.$router.push('/login')
+          }).catch(err => {
+              console.log(err)
+          })
+      }
     } 
 }
 </script>

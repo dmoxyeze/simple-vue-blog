@@ -23,25 +23,32 @@
                                             <strong> IN</strong>
                                         </a>
                                     </h3>
+                                    <h6 class="text-danger" v-if="errorMessage">{{ errorMessage }}</h6>
                                 </div>
-                                <form action="" method="post">
+                                <form @submit.prevent>
                                     <!--Body-->
                                     <div class="md-form">
-                                        <input type="text" id="Form-email5" class="form-control white-text" placeholder="Your Email" name="email">
+                                        <input v-model.trim="loginForm.email" type="text" id="Form-email5" class="form-control white-text" placeholder="Your Email" name="email">
                                         <label for="Form-email5" class="white-text">Your email</label>
                                     </div>
 
                                     <div class="md-form pb-3">
-                                        <input type="password" id="Form-pass5" class="form-control white-text" name="password">
+                                        <input v-model.trim="loginForm.password" type="password" id="Form-pass5" class="form-control white-text" name="password">
                                         <label for="Form-pass5" class="white-text">Your password</label>
                                     </div>
-
+                                    <transition name="fade">
+                                        <div  v-if="loading" class="d-flex justify-content-center">
+                                          <div class="spinner-border mb-3 text-primary" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                          </div>
+                                        </div>
+                                    </transition>
                                     <!--Grid row-->
                                     <div class="row d-flex align-items-center mb-4">
 
                                         <!--Grid column-->
                                         <div class="text-center mb-3 col-md-12">
-                                            <button type="submit" class="btn btn-primary btn-block btn-rounded z-depth-1 waves-effect waves-light" name="login">Sign in</button>
+                                            <button @click="login" class="btn btn-primary btn-block btn-rounded z-depth-1 waves-effect waves-light" name="login">Sign in</button>
                                         </div>
                                         <!--Grid column-->
                                     </div>
@@ -56,7 +63,7 @@
                                     <!--Grid column-->
                                     <div class="col-md-6 col-xs-12">
                                         <p class="font-small white-text d-flex justify-content-end">
-                                            <a href="" class="blue-text ml-1 font-weight-bold"> Not Registered? Sign Up</a>
+                                            <router-link :to="{ name: 'register' }" class='blue-text ml-1 font-weight-bold'>Not Registered? Sign Up </router-link>
                                         </p>
                                     </div>
                                 <!--Grid column-->
@@ -77,7 +84,39 @@
     </div>
 </template>
 <script>
+const fb = require('../../firebase/firebaseConfig')
+import { mapState } from 'vuex'
 export default {
-    name: 'Login'
+    name: 'Login',
+    data: () => {
+        return {
+            loginForm:{
+                email: "",
+                password: ""
+            },
+            loading: false,
+            errorMessage: ""
+        }
+    },
+    methods: {
+        login() {
+            this.loading = true;
+            fb.auth.signInWithEmailAndPassword(this.loginForm.email, this.loginForm.password).then(user => {
+                console.log(`current user's ID is ${user.user.uid}`)
+                this.$store.commit('setCurrentUser', user.user)
+                this.$store.dispatch('fetchUserProfile')
+                this.$router.push('/create-post')
+            }).catch(error => {
+                this.loading = false;
+                console.log(error)
+                this.errorMessage = error.message;
+            });
+        },
+    },
+    computed: {
+        ...mapState({
+            person: state => state.userProfile
+        })
+    }
 }
 </script>
