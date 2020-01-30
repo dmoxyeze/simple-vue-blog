@@ -3,14 +3,14 @@ import 'firebase/firebase-firestore'
 
 //firebase initialization
 const firebaseConfig = {
-    apiKey: "AIzaSyCtusVGxFYAR3jOtJ1dSU3UJtoAS5w_eOs",
-    authDomain: "test-blog-1feab.firebaseapp.com",
-    databaseURL: "https://test-blog-1feab.firebaseio.com",
-    projectId: "test-blog-1feab",
-    storageBucket: "test-blog-1feab.appspot.com",
-    messagingSenderId: "896310559450",
-    appId: "1:896310559450:web:8da5bc3007129ebc731be3",
-    measurementId: "G-DRR214K3YL"
+    apiKey: "your-api-key",
+    authDomain: "your-auth-domain.firebaseapp.com",
+    databaseURL: "https://your-database.firebaseio.com",
+    projectId: "your-project-id",
+    storageBucket: "your-storage-bucket.appspot.com",
+    messagingSenderId: "your-messaging-sender-id",
+    appId: "your-app-id",
+    measurementId: "your-measurement-id"
   };
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
