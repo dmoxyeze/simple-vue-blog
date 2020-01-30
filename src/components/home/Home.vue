@@ -34,12 +34,10 @@ export default {
         }
     },
     methods: {
-        increment() {
-            this.$store.commit('increment')
-        }
+        
     },
     computed: {
-        ...mapState(['currentUser','count'])
+        //...mapState(['currentUser','count'])
     }
 }
 </script>

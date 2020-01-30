@@ -1,10 +1,11 @@
 <template>
     <div class="container">
-        <div class="row">
-            <div class="col-md-6">
+        
+        <div class="row" v-if="posts.length">
+            <div class="col-md-6" v-for="post in posts" :key="post.id">
                 <b-card
-                    title="Post Title"
-                    img-src="https://picsum.photos/600/300/?image=25"
+                    :title="post.title"
+                    :img-src=" post.image "
                     img-alt="Image"
                     img-top
                     tag="article"
@@ -12,61 +13,13 @@
                     class="mb-2"
                 >
                     <b-card-text>
-                    Some quick example text to build on the card title and make up the bulk of the card's content.
+                    {{ post.content | trimLength  }}
                     </b-card-text>
+                    <div class="card-footer">
+                        {{ post.createdOn | formatDate }}
+                    </div>
 
                     <b-button href="#" variant="primary" class="text-white stretched-link">read</b-button>
-                </b-card>
-            </div>
-            <div class="col-md-6">
-                <b-card
-                    title="Post Title"
-                    img-src="https://picsum.photos/600/300/?image=25"
-                    img-alt="Image"
-                    img-top
-                    tag="article"
-                    style=""
-                    class="mb-2"
-                >
-                    <b-card-text>
-                    Some quick example text to build on the card title and make up the bulk of the card's content.
-                    </b-card-text>
-
-                    <b-button href="#" variant="primary" class="text-white stretched-link">read</b-button>
-                </b-card>
-            </div>
-            <div class="col-md-6">
-                <b-card
-                    title="Post Title"
-                    img-src="https://picsum.photos/600/300/?image=25"
-                    img-alt="Image"
-                    img-top
-                    tag="article"
-                    style=""
-                    class="mb-2"
-                >
-                    <b-card-text>
-                    Some quick example text to build on the card title and make up the bulk of the card's content.
-                    </b-card-text>
-
-                    <b-button href="#" variant="primary" class="text-white stretched-link">Go somewhere</b-button>
-                </b-card>
-            </div>
-            <div class="col-md-6">
-                <b-card
-                    title="Post Title"
-                    img-src="https://picsum.photos/600/300/?image=25"
-                    img-alt="Image"
-                    img-top
-                    tag="article"
-                    style=""
-                    class="mb-2"
-                >
-                    <b-card-text>
-                    Some quick example text to build on the card title and make up the bulk of the card's content.
-                    </b-card-text>
-
-                    <b-button href="#" variant="primary" class="text-white stretched-link">Go somewhere</b-button>
                 </b-card>
             </div>
         </div>
@@ -77,6 +30,8 @@
     </div>
 </template>
 <script>
+import { mapState } from 'vuex'
+import moment from 'moment'
 export default {
     name: 'Post',
     data: function (){
@@ -84,6 +39,25 @@ export default {
             rows: 100,
             currentPage: 1
         }
+    },
+    filters: {
+        formatDate(val) {
+        if (!val) { return '-' }
+        let date = val.toDate(),
+        dt = moment(date).fromNow(),
+        x = dt.charAt(0).toUpperCase() + 
+           dt.slice(1); 
+        return x
+    },
+    trimLength(val) {
+        if (val.length < 200) {
+            return val
+        }
+        return `${val.substring(0, 200)}...`
+    }
+    },
+    computed: {
+        ...mapState(['currentUser', 'userProfile','posts'])
     }
 }
 /*

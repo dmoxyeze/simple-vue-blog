@@ -7,6 +7,7 @@ import Post from '../components/post/Post'
 import CreatePost from '../components/post/CreatePost'
 import Login from '../components/auth/Login'
 import Register from '../components/auth/Register'
+import ViewPost from '../components/post/ViewPost'
 
 Vue.use(VueRouter)
 
@@ -37,7 +38,7 @@ const routes = [
         requiresAuth: true
       } 
     },
-    //{ path: '/viewpost/:post_id', name: 'viewpost', component: ViewPost },
+    { path: '/viewpost/:post_id', name: 'viewpost', component: ViewPost },
     //{ path: '/category', name: 'category', component: Category },
     //{ path: '/category/:slug', name: 'categoryposts', component: CategoryPosts },
     

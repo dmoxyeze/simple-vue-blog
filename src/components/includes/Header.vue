@@ -31,6 +31,14 @@
               <b-dropdown-item :to="{ name: 'login' }">Login</b-dropdown-item>
               <b-dropdown-item :to="{ name: 'register' }">Sign Up</b-dropdown-item>
             </b-nav-item-dropdown>
+            <b-nav-item-dropdown toggle-class="text-decoration-none" no-caret right>
+              <template v-slot:button-content>
+                <b-icon-bell-fill style="color: #FFF;"></b-icon-bell-fill>
+                <span v-if="hiddenPosts.length" class="badge badge-warning">{{ hiddenPosts.length }}</span>
+              </template>
+                  <b-dropdown-item @click="showNewPosts" v-if="hiddenPosts.length" href="#">You have {{ hiddenPosts.length }} new <span v-if="hiddenPosts.length > 1">posts</span><span v-else>post</span></b-dropdown-item>
+                  <b-dropdown-item v-else href="#">No new posts</b-dropdown-item>
+            </b-nav-item-dropdown>
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
@@ -38,10 +46,20 @@
 </template>
 <script>
 const fb =  require("../../firebase/firebaseConfig")
+import { mapState } from 'vuex'
 export default {
    name: 'Header',
    methods: {
-      
+      showNewPosts() {
+        let updatedPostArray = this.hiddenPosts.concat(this.posts)
+        //clear the hidden post array
+        this.$store.commit('setHiddenPosts', null)
+        this.$store.commit('setPosts', updatedPostArray)
+
+      },
+    },
+    computed: {
+      ...mapState(['hiddenPosts'])
     } 
 }
 </script>

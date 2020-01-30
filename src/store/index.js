@@ -17,18 +17,26 @@ fb.auth.onAuthStateChanged(user => {
 
         // realtime updates from our posts collection
         fb.postsCollection.orderBy('createdOn', 'desc').onSnapshot(querySnapshot => {
+          //console.log("yes")
+          //console.log(querySnapshot.docs.length)
+          //console.log(querySnapshot.docChanges[0].doc.data().userId)
+          //console.log(`user id ${ store.state.currentUser.uid }`)
             // check if created by currentUser
             let createdByCurrentUser
             if (querySnapshot.docs.length) {
-                createdByCurrentUser = store.state.currentUser.uid == querySnapshot.docChanges[0].doc.data().userId ? true : false
+              //console.log("there ar posts")
+              //console.log(store.state.currentUser.uid)
+              //console.log(querySnapshot.docChanges()[0].doc.data().userId)
+                createdByCurrentUser = store.state.currentUser.uid == querySnapshot.docChanges()[0].doc.data().userId ? true : false
+                console.log(createdByCurrentUser)
             }
-
+            
             // add new posts to hiddenPosts array after initial load
-            if (querySnapshot.docChanges.length !== querySnapshot.docs.length
-                && querySnapshot.docChanges[0].type == 'added' && !createdByCurrentUser) {
+            if (querySnapshot.docChanges().length !== querySnapshot.docs.length
+                && querySnapshot.docChanges()[0].type == 'added' && !createdByCurrentUser) {
 
-                let post = querySnapshot.docChanges[0].doc.data()
-                post.id = querySnapshot.docChanges[0].doc.id
+                let post = querySnapshot.docChanges()[0].doc.data()
+                post.id = querySnapshot.docChanges()[0].doc.id
 
                 store.commit('setHiddenPosts', post)
             } else {
@@ -39,10 +47,14 @@ fb.auth.onAuthStateChanged(user => {
                     post.id = doc.id
                     postsArray.push(post)
                 })
-
+                
                 store.commit('setPosts', postsArray)
             }
         })
+    }else{
+        store.commit('setCurrentUser', null)
+        store.commit('setUserProfile', {})
+        store.dispatch('getAllPosts');
     }
 })
 
@@ -52,7 +64,8 @@ export const store = new Vuex.Store({
         userProfile: {},
         posts: [],
         count: 0,
-        hiddenPosts: []
+        hiddenPosts: [],
+        allPosts: []
     },
     actions: {
         clearData({ commit }) {
@@ -66,6 +79,32 @@ export const store = new Vuex.Store({
                 commit('setUserProfile', res.data())
             }).catch(err => {
                 console.log(err)
+            })
+        },
+        getAllPosts({ commit, state}){
+            fb.postsCollection.orderBy('createdOn', 'desc').onSnapshot(querySnapshot => {
+                let createdByCurrentUser = false
+                
+                // add new posts to hiddenPosts array after initial load
+            if (querySnapshot.docChanges().length !== querySnapshot.docs.length
+            && querySnapshot.docChanges()[0].type == 'added' && !createdByCurrentUser) {
+
+            let post = querySnapshot.docChanges()[0].doc.data()
+            post.id = querySnapshot.docChanges()[0].doc.id
+
+            store.commit('setHiddenPosts', post)
+            } else {
+                let postsArray = []
+
+                querySnapshot.forEach(doc => {
+                    let post = doc.data()
+                    post.id = doc.id
+                    postsArray.push(post)
+                })
+                
+                commit('setPosts', postsArray)
+            }
+                
             })
         },
         updateProfile({ commit, state }, data) {

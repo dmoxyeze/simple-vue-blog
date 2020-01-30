@@ -18,6 +18,7 @@ const firebaseConfig = {
 
   //firebase utils
   const db = firebase.firestore();
+  const storage = firebase.storage;
   const auth = firebase.auth();
   const currentUser =  auth.currentUser
 
@@ -38,5 +39,6 @@ export {
     currentUser,
     usersCollection,
     postsCollection,
-    commentsCollection
+    commentsCollection,
+    storage
 }
